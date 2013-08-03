@@ -16,3 +16,5 @@ the branch must be reverted (above paragraph). This will cause all changes to be
 Note: Quick test of the above issue showed not to be too much of an issue. Involved a few steps but got it 
 back up to scratch. Did however, keep a lot of files i wnated deleted, possibly due to the order i choose to 
 commit and pull. May cause issues with putting bad lines of code back into it.
+Note: Testing revealed it was actualy quite easy to fix this and not lose changes but seemed to keep some files
+which may mean some bad lines of code get put back after deletion. The order i do things might negate this issue.
