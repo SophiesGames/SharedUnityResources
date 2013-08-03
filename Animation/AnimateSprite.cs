@@ -185,7 +185,7 @@ public class AnimateSprite : MonoBehaviour
         }
         if (animationFrameSet == null)
         {
-            Debug.LogError("animationFrameSet = null: No animationFrameSet set by the name '" + frameSetName + "' found on" + this.gameObject.name);
+            Debug.LogError("animationFrameSet = null: No animationFrameSet set by the name '" + frameSetName + "' found on " + this.gameObject.name);
         }
     }
 
