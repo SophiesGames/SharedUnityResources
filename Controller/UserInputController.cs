@@ -21,8 +21,7 @@ public class UserInputController : Controller
     {
         if (Input.GetButton("Click"))
         {
-            Vector3 mouseWorldPosition;
-            mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mouseWorldPosition.z = 0;
 
             controlledObject.SetFinalDestiantion(mouseWorldPosition);

@@ -7,9 +7,9 @@ using System.Collections;
 public abstract class Being : MonoBehaviour
 {
     private CharacterController controller;
-    private Vector3 velocity;
+
     private Vector3 currentPosition;
-    public int movementSpeed = 1;
+    public int movementSpeed = 100;
 
     //properties
     //public Vector3 finalDestinationPos { get; set; }
@@ -29,16 +29,26 @@ public abstract class Being : MonoBehaviour
     /// <param name="destinationPosition"></param>
     public void Move(Vector3 finalDestinationPos)
     {
-        Vector3 wayPoint = new Vector3();
-        wayPoint = Pathfinding.GetNextWaypoint(currentPosition, finalDestinationPos);
+        //Later on the final destiantion will be differnt from firt port of call
+        Vector3 wayPoint = Pathfinding.GetNextWaypoint(currentPosition, finalDestinationPos);
 
-        //This can be replaced by getting the direction of travel and moving the movementSpeed amount of units in that direction.
-        //This will look like: velocity = directionVector * movementSpeed
-        //if velocity.x + current pos.x is greater that intended destination and currentpos.x is less, assume you will overshoot 
-        //and change velocity to make it small enough to hit
-        Vector3 distanceToTravel = wayPoint - currentPosition;
-        velocity = new Vector3(distanceToTravel.x / movementSpeed, distanceToTravel.y / movementSpeed, distanceToTravel.z / movementSpeed);
-        //Moves the appropriate speed towards that waypoint
+        Vector3 direction = (currentPosition - wayPoint).normalized;
+        if (direction.x > 0) direction.x = 1; else direction.x = -1;
+        if (direction.y > 0) direction.y = 1; else direction.y = -1;
+        if (direction.z > 0) direction.z = 1; else direction.z = -1;
+        //move in the right direction by speed.
+        Vector3 velocity = movementSpeed * direction;
+
+
+        ////Check for overshooting X
+        //bool newPosXGreaterThanWaypointPosx = (currentPosition.x + velocity.x) > wayPoint.x;
+        //bool currPosXLessThanWaypointX = currentPosition.x < wayPoint.x;
+        //if (newPosXGreaterThanWaypointPosx && currPosXLessThanWaypointX)velocity.x = wayPoint.x - currentPosition.x;
+        ////Check for overshooting Y
+        //bool newPosYGreaterThanWaypointPosy = (currentPosition.y + velocity.y) > wayPoint.y;
+        //bool currPosYLessThanWaypointY = currentPosition.y < wayPoint.y;
+        //if (newPosYGreaterThanWaypointPosy && currPosYLessThanWaypointY) velocity.y = wayPoint.y - currentPosition.y;
+
         controller.Move(velocity * Time.deltaTime);
     }
 
