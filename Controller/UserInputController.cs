@@ -24,7 +24,7 @@ public class UserInputController : Controller
             Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mouseWorldPosition.z = 0;
 
-            controlledObject.SetFinalDestiantion(mouseWorldPosition);
+            controlledObject.SetDestinationPoint(mouseWorldPosition);
         }
 	
 	}
