@@ -2,7 +2,7 @@
 using System.Collections;
 
 /// <summary>
-/// Anythign that exists withsome kind of health
+/// Anythign that exists with some kind of health
 /// </summary>
 public abstract class Being : MonoBehaviour
 {
@@ -10,6 +10,7 @@ public abstract class Being : MonoBehaviour
 
     public int movementSpeed = 100;
     public int rotationSpeed = 10;
+    private Vector3 wayPoint;
 
     private void Start()
     {
@@ -17,26 +18,38 @@ public abstract class Being : MonoBehaviour
     }
 
     /// <summary>
-    /// Allows for controllers to inject a destination point
+    /// Updates Move if required
     /// </summary>
-    /// <param name="finalDestinationPos"></param>
-    public void SetDestinationPoint(Vector3 finalDestinationPos)
+    private void Update()
     {
-        Move(finalDestinationPos);
+        //Movement
+        if (transform.position != wayPoint)
+        {
+            Move();
+        }
+        else
+        {
+            //Check if there are more Waypoints and make this the new one if so
+        }
     }
 
     /// <summary>
-    /// uses destinationPosition to set its waypoint
-    /// Will update to find a new path every fram at first.
-    /// This can be optimised alter by giving it a number of frames to run before checking if the path is still the best.
-    /// The mfore frequent the update the better however.
+    /// Call this every time a path should be recalculated or a new one given.
+    /// Allows for controllers to inject a destination point.
+    /// </summary>
+    /// <param name="finalDestinationPos"></param>
+    public void CalculatePath(Vector3 TargetPosition)
+    {
+        //In future it can take in a list of waypoints
+        wayPoint = Pathfinding.GetNextWaypoint(transform.position, TargetPosition);
+    }
+
+    /// <summary>
+    /// Called in Update. Rotates to face walking direction, checks for overshooting and then moves controller
     /// </summary>
     /// <param name="destinationPosition"></param>
-    public void Move(Vector3 finalDestinationPos)
+    protected virtual void Move()
     {
-        //Creates wayponts based on pathfidning (currently returs the same as 
-        Vector3 wayPoint = Pathfinding.GetNextWaypoint(transform.position, finalDestinationPos);
-
         //Get direction
         Vector3 direction = (wayPoint - transform.position);
         //Make direction vector 1, 0 or -1 

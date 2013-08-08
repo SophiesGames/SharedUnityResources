@@ -12,7 +12,8 @@ public class UserInputController : Controller
 {
 
 	// Use this for initialization
-	void Start () {
+	void Start () 
+    {
 	
 	}
 	
@@ -24,8 +25,7 @@ public class UserInputController : Controller
             Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mouseWorldPosition.z = 0;
 
-            controlledObject.SetDestinationPoint(mouseWorldPosition);
+            controlledObject.CalculatePath(mouseWorldPosition);
         }
-	
 	}
 }
