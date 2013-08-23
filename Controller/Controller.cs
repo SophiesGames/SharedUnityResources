@@ -9,11 +9,11 @@ using System.Collections;
 /// </summary>
 public abstract class Controller : MonoBehaviour
 {
-    public Being controlledObject;
+    protected Being controlledObject;
     // Use this for initialization
-    void Start()
+    protected virtual void Start()
     {
-
+        controlledObject = this.gameObject.GetComponent<Being>();
     }
 
     // Update is called once per frame

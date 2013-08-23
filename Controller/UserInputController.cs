@@ -11,11 +11,11 @@ using System.Collections;
 public class UserInputController : Controller
 {
 
-	// Use this for initialization
-	void Start () 
-    {
-	
-	}
+    //// Use this for initialization
+    //void Start () 
+    //{
+    //    base.Start();
+    //}
 	
 	// Update is called once per frame
 	void Update () 

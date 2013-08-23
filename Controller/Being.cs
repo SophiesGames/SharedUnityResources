@@ -15,6 +15,7 @@ public abstract class Being : MonoBehaviour
     private void Start()
     {
         controller = GetComponent<CharacterController>();
+        wayPoint = transform.position;
     }
 
     /// <summary>
