@@ -30,7 +30,7 @@ public abstract class Being : MonoBehaviour
         }
         else
         {
-            //Check if there are more Waypoints and make this the new one if so
+            //Check if there are more Waypoints and make this is the new one if so
         }
     }
 
@@ -82,5 +82,7 @@ public abstract class Being : MonoBehaviour
 
         //apply movement to controller
         controller.Move(velocity * Time.deltaTime);
+
+        
     }
 }
