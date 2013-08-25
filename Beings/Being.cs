@@ -10,14 +10,21 @@ public abstract class Being : MonoBehaviour
 
     public int movementSpeed = 100;
     public int rotationSpeed = 10;
+
+    [HideInInspector]
+    public Vector3 direction;
+
     private Vector3 wayPoint;
     private IBeingView view;
+    
 
     private void Start()
     {
         controller = GetComponent<CharacterController>();
         wayPoint = transform.position;
         view = (IBeingView)this.transform.Find("View").GetComponent(typeof(IBeingView));
+        //do a check if this returns null, tell it to implement IBeingViewInterface
+        view.InitialiseView(this);
     }
 
     /// <summary>
@@ -54,7 +61,7 @@ public abstract class Being : MonoBehaviour
     protected virtual void Move()
     {
         //Get direction
-        Vector3 direction = (wayPoint - transform.position);
+        direction = (wayPoint - transform.position);
         //Make direction vector 1, 0 or -1 
         if (direction.x < 0) direction.x = -1;
         if (direction.x > 0) direction.x = 1;

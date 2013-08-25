@@ -2,9 +2,9 @@
 using System.Collections;
 
 /// <summary>
-/// Base view class for future use if required.
+/// If generic view code is needed it can be put here. Might not be used.
 /// </summary>
-abstract class View : MonoBehaviour
+public abstract class View : MonoBehaviour
 {
 
 }
