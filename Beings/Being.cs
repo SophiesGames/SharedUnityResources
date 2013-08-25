@@ -11,11 +11,13 @@ public abstract class Being : MonoBehaviour
     public int movementSpeed = 100;
     public int rotationSpeed = 10;
     private Vector3 wayPoint;
+    private IBeingView view;
 
     private void Start()
     {
         controller = GetComponent<CharacterController>();
         wayPoint = transform.position;
+        view = (IBeingView)this.transform.Find("View").GetComponent(typeof(IBeingView));
     }
 
     /// <summary>
@@ -83,6 +85,6 @@ public abstract class Being : MonoBehaviour
         //apply movement to controller
         controller.Move(velocity * Time.deltaTime);
 
-        
+        view.MoveAnimation();
     }
 }
