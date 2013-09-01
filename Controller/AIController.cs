@@ -10,12 +10,6 @@ using System.Collections;
 /// </summary>
 public class AIController : Controller
 {
-
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
 	// Update is called once per frame
 	void Update () {
 	

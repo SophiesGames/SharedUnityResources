@@ -10,21 +10,28 @@ public abstract class Being : MonoBehaviour
 
     public int movementSpeed = 100;
     public int rotationSpeed = 10;
+    public int health;
+    public int attackSpeed;
 
     [HideInInspector]
     public Vector3 direction;
 
-    private Vector3 wayPoint;
-    private IBeingView view;
+    private Vector3 wayPoint; 
+    protected ViewBeing viewParent;
     
 
     private void Start()
     {
         controller = GetComponent<CharacterController>();
         wayPoint = transform.position;
-        view = (IBeingView)this.transform.Find("View").GetComponent(typeof(IBeingView));
+        FindAndInitialiseView();
+    }
+
+    protected virtual void FindAndInitialiseView()
+    {
+        viewParent = this.transform.Find("View").GetComponent<ViewBeing>();//(IBeingView)this.transform.Find("View").GetComponent(typeof(IBeingView));
         //do a check if this returns null, tell it to implement IBeingViewInterface
-        view.InitialiseView(this);
+        viewParent.InitialiseView(this);
     }
 
     /// <summary>
@@ -75,6 +82,9 @@ public abstract class Being : MonoBehaviour
         newRotation.x = 0.0f;
         newRotation.y = 0.0f;
         transform.rotation = Quaternion.Slerp(transform.rotation, newRotation, Time.deltaTime * rotationSpeed);
+        /*stop image roation with:
+        transform.rotation = Quaternion.identity;
+         in update on view class*/
 
         //move in the right direction by speed.
         Vector3 velocity = movementSpeed * direction;
@@ -92,6 +102,6 @@ public abstract class Being : MonoBehaviour
         //apply movement to controller
         controller.Move(velocity * Time.deltaTime);
 
-        view.MoveAnimation();
+        viewParent.MoveAnimation();
     }
 }

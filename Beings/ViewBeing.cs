@@ -2,18 +2,18 @@
 using System.Collections;
 
 /// <summary>
-/// If generic character view code is needed it can be put here. 
-/// Try to get everything in here
+/// As this genric level probably can  be used to do anything, i should probably just be an interface. 
+/// Its only purpose is to allow thei high level being to give aniamtion calls to something.
 /// </summary>
 public class ViewBeing : View, IBeingView
 {
-    private Being being;
+    protected Being being;
 
     /// <summary>
     /// Can be overridden to take new child type for greater access
     /// </summary>
     /// <param name="being"></param>
-    public virtual void InitialiseView(Being injectedBeing)
+    public void InitialiseView(Being injectedBeing)
     {
         being = injectedBeing;
     }
@@ -27,12 +27,6 @@ public class ViewBeing : View, IBeingView
         //TODO: Decide what kind of movement to player here eg. run, walk, crawl.
 
     }
-
-
-    //void IBeingView.InitialiseView(Being injectedBeing)
-    //{
-    //    being = injectedBeing;
-    //}
 }
 
 
