@@ -78,10 +78,10 @@ public abstract class Being : MonoBehaviour
         direction.z = 0;
 
         //Rotate to face waypoint
-        Quaternion newRotation = Quaternion.LookRotation(direction, Vector3.back);
-        newRotation.x = 0.0f;
-        newRotation.y = 0.0f;
-        transform.rotation = Quaternion.Slerp(transform.rotation, newRotation, Time.deltaTime * rotationSpeed);
+        //Quaternion newRotation = Quaternion.LookRotation(direction, Vector3.back);
+        //newRotation.x = 0.0f;
+        //newRotation.y = 0.0f;
+        //transform.rotation = Quaternion.Slerp(transform.rotation, newRotation, Time.deltaTime * rotationSpeed);
         /*stop image roation with:
         transform.rotation = Quaternion.identity;
          in update on view class*/
