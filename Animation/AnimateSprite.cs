@@ -151,7 +151,13 @@ public class AnimateSprite : MonoBehaviour
         AnimationXML animationXML = new AnimationXML();
         SmallXmlParser smallXML = new SmallXmlParser();
         TextAsset temp = (TextAsset)Resources.Load(XMLSheet);
+
+        if (temp == null)
+        {
+            Debug.LogError("Cannot find XMLSheet sheet for: " + this.gameObject.name + " on: " + this.transform.root.name);
+        }
         TextReader textReader = new StringReader(temp.text);
+
         smallXML.Parse(textReader, animationXML);
 
         AnimationXMLData.animationXMLData.loadedXMLS.Add(XMLSheet);     //add the name of the list.

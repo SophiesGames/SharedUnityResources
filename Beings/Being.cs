@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+
+
 /// <summary>
 /// Anythign that exists with some kind of health
 /// </summary>
@@ -14,17 +16,77 @@ public abstract class Being : MonoBehaviour
     public int attackSpeed;
 
     [HideInInspector]
-    public Vector3 direction;
+    public Vector3 directionVector;
 
-    private Vector3 wayPoint; 
+    private float hitBoxHeight;
+
+    private Vector3 wayPoint;
     protected ViewBeing viewParent;
-    
+
+    public enum Direction
+    {
+        North, NorthWest, West, SouthWest, South, SouthEast, East, NorthEast
+    }
+
+    public Direction GetDirection
+    {
+        get
+        {
+            //default is south
+            Direction curentDirection = Direction.South;
+
+            if (directionVector.x > 0)
+            {
+                if (directionVector.y > 0)
+                {
+                    curentDirection = Direction.NorthEast;
+                }
+                else if (directionVector.y < 0)
+                {
+                    curentDirection = Direction.SouthEast;
+                }
+                else
+                {
+                    curentDirection = Direction.East;
+                }
+            }
+            else if (directionVector.x < 0)
+            {
+
+                if (directionVector.y > 0)
+                {
+                    curentDirection = Direction.NorthWest;
+                }
+                else if (directionVector.y < 0)
+                {
+                    curentDirection = Direction.SouthWest;
+                }
+                else
+                {
+                    curentDirection = Direction.West;
+                }
+            }
+            else
+            {
+                if (directionVector.y > 0)
+                {
+                    curentDirection = Direction.North;
+                }
+                else if (directionVector.y < 0)
+                {
+                    curentDirection = Direction.South;
+                }
+            }
+            return curentDirection;
+        }
+    }
 
     private void Start()
     {
         controller = GetComponent<CharacterController>();
         wayPoint = transform.position;
         FindAndInitialiseView();
+        hitBoxHeight = transform.Find("HitBox").transform.lossyScale.y;
     }
 
     protected virtual void FindAndInitialiseView()
@@ -68,26 +130,19 @@ public abstract class Being : MonoBehaviour
     protected virtual void Move()
     {
         //Get direction
-        direction = (wayPoint - transform.position);
+        directionVector = (wayPoint - transform.position);
         //Make direction vector 1, 0 or -1 
-        if (direction.x < 0) direction.x = -1;
-        if (direction.x > 0) direction.x = 1;
-        if (direction.y < 0) direction.y = -1;
-        if (direction.y > 0) direction.y = 1;
+        if (directionVector.x < 0 - hitBoxHeight/2) directionVector.x = -1;
+        else if (directionVector.x > 0 + hitBoxHeight/2) directionVector.x = 1;
+        else directionVector.x = 0;
+        if (directionVector.y < 0 - hitBoxHeight/2) directionVector.y = -1;
+        else if (directionVector.y > 0 + hitBoxHeight/2) directionVector.y = 1;
+        else directionVector.y = 0;
         //2d games so z is ignored
-        direction.z = 0;
-
-        //Rotate to face waypoint
-        //Quaternion newRotation = Quaternion.LookRotation(direction, Vector3.back);
-        //newRotation.x = 0.0f;
-        //newRotation.y = 0.0f;
-        //transform.rotation = Quaternion.Slerp(transform.rotation, newRotation, Time.deltaTime * rotationSpeed);
-        /*stop image roation with:
-        transform.rotation = Quaternion.identity;
-         in update on view class*/
+        directionVector.z = 0;
 
         //move in the right direction by speed.
-        Vector3 velocity = movementSpeed * direction;
+        Vector3 velocity = movementSpeed * directionVector;
 
         //Check for overshooting X destination
         bool newPosXGreaterThanWaypointPosx = (transform.position.x + velocity.x) > wayPoint.x;

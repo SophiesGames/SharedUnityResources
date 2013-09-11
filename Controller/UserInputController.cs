@@ -10,21 +10,14 @@ using System.Collections;
 /// </summary>
 public class UserInputController : Controller
 {
-
-    //// Use this for initialization
-    //void Start () 
-    //{
-    //    base.Start();
-    //}
-	
+    protected Vector3 mouseWorldPosition;
 	// Update is called once per frame
-	void Update () 
+	protected virtual void Update () 
     {
         if (Input.GetButton("Click"))
         {
-            Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mouseWorldPosition.z = 0;
-
             controlledObject.CalculatePath(mouseWorldPosition);
         }
 	}
