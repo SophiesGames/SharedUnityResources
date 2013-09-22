@@ -18,7 +18,7 @@ public abstract class Being : MonoBehaviour
     [HideInInspector]
     public Vector3 directionVector;
 
-    private float hitBoxHeight;
+    private float colliderHeight;
 
     private Vector3 wayPoint;
     protected ViewBeing viewParent;
@@ -80,13 +80,13 @@ public abstract class Being : MonoBehaviour
             return curentDirection;
         }
     }
-
+     
     private void Start()
     {
         controller = GetComponent<CharacterController>();
         wayPoint = transform.position;
         FindAndInitialiseView();
-        hitBoxHeight = transform.Find("HitBox").transform.lossyScale.y;
+        colliderHeight = controller.transform.lossyScale.y;// transform.Find("HitBox").transform.lossyScale.y;
     }
 
     protected virtual void FindAndInitialiseView()
@@ -117,10 +117,10 @@ public abstract class Being : MonoBehaviour
     /// Allows for controllers to inject a destination point.
     /// </summary>
     /// <param name="finalDestinationPos"></param>
-    public void CalculatePath(Vector3 TargetPosition)
+    public void CalculatePath(Vector3 targetPosition)
     {
         //In future it can take in a list of waypoints
-        wayPoint = Pathfinding.GetNextWaypoint(transform.position, TargetPosition);
+        wayPoint = Pathfinding.GetNextWaypoint(transform.position, targetPosition);
     }
 
     /// <summary>
@@ -132,11 +132,11 @@ public abstract class Being : MonoBehaviour
         //Get direction
         directionVector = (wayPoint - transform.position);
         //Make direction vector 1, 0 or -1 
-        if (directionVector.x < 0 - hitBoxHeight/2) directionVector.x = -1;
-        else if (directionVector.x > 0 + hitBoxHeight/2) directionVector.x = 1;
+        if (directionVector.x < 0 - colliderHeight/2) directionVector.x = -1;
+        else if (directionVector.x > 0 + colliderHeight/2) directionVector.x = 1;
         else directionVector.x = 0;
-        if (directionVector.y < 0 - hitBoxHeight/2) directionVector.y = -1;
-        else if (directionVector.y > 0 + hitBoxHeight/2) directionVector.y = 1;
+        if (directionVector.y < 0 - colliderHeight/2) directionVector.y = -1;
+        else if (directionVector.y > 0 + colliderHeight/2) directionVector.y = 1;
         else directionVector.y = 0;
         //2d games so z is ignored
         directionVector.z = 0;
@@ -154,7 +154,7 @@ public abstract class Being : MonoBehaviour
         //Apply it
         if (newPosYGreaterThanWaypointPosy && currPosYLessThanWaypointY) velocity.y = wayPoint.y - transform.position.y;
 
-        //apply movement to controller
+        //apply movement to controller - use move to account for gravity effects 
         controller.Move(velocity * Time.deltaTime);
 
         viewParent.MoveAnimation();

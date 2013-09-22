@@ -10,8 +10,24 @@ using System.Collections;
 /// </summary>
 public class AIController : Controller
 {
-	// Update is called once per frame
-	void Update () {
-	
-	}
+    public int directionChangeInterval = 300;
+
+    private int counter = 0;
+
+    protected virtual void Update()
+    {
+        if (counter > directionChangeInterval)
+        {
+            counter = 0;
+        }
+        if (counter == 0)
+        {
+            float x = Random.Range(0f, 1000f);
+            float y = Random.Range(0f, 1000f);
+            Vector3 randomWalk = new Vector3(x, y, 0);
+            controlledObject.CalculatePath(randomWalk);
+        }
+
+        counter++;
+    }
 }

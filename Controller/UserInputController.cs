@@ -16,9 +16,9 @@ public class UserInputController : Controller
     {
         if (Input.GetButton("Click"))
         {
-            mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            mouseWorldPosition.z = 0;
-            controlledObject.CalculatePath(mouseWorldPosition);
+            //mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            //mouseWorldPosition.z = 0;
+            //controlledObject.CalculatePath(mouseWorldPosition);
         }
 	}
 }
