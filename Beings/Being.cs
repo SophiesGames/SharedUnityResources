@@ -102,6 +102,7 @@ public abstract class Being : MonoBehaviour
     private void Update()
     {
         //Movement
+        //!HandyFunc.ApproximatelyEqual(
         if (transform.position != wayPoint)
         {
             Move();
@@ -142,11 +143,11 @@ public abstract class Being : MonoBehaviour
         //Get direction
         directionVector = (wayPoint - transform.position);
         //Make direction vector 1, 0 or -1 
-        if (directionVector.x < 0 - colliderHeight/2) directionVector.x = -1;
-        else if (directionVector.x > 0 + colliderHeight/2) directionVector.x = 1;
+        if (directionVector.x < 0 ) directionVector.x = -1;
+        else if (directionVector.x > 0 ) directionVector.x = 1;
         else directionVector.x = 0;
-        if (directionVector.y < 0 - colliderHeight/2) directionVector.y = -1;
-        else if (directionVector.y > 0 + colliderHeight/2) directionVector.y = 1;
+        if (directionVector.y < 0 ) directionVector.y = -1;
+        else if (directionVector.y > 0 ) directionVector.y = 1;
         else directionVector.y = 0;
         //2d games so z is ignored
         directionVector.z = 0;
@@ -154,15 +155,24 @@ public abstract class Being : MonoBehaviour
         //move in the right direction by speed.
         Vector3 velocity = movementSpeed * directionVector;
 
-        //Check for overshooting X destination
-        bool newPosXGreaterThanWaypointPosx = (transform.position.x + velocity.x) > wayPoint.x;
+        //Check for overshooting X destination (it has to be checked with delta time as that makes it much smaller)
+        bool newPosXGreaterThanWaypointPosx = (transform.position.x + (velocity.x * Time.deltaTime)) > wayPoint.x;
         bool currPosXLessThanWaypointX = transform.position.x < wayPoint.x;
-        if (newPosXGreaterThanWaypointPosx && currPosXLessThanWaypointX) velocity.x = wayPoint.x - transform.position.x;
+        if (newPosXGreaterThanWaypointPosx && currPosXLessThanWaypointX)
+        {
+            velocity.x = 0;// wayPoint.y - transform.position.y;
+            transform.position = new Vector3(wayPoint.x, transform.position.y, transform.position.z);
+        }
+
         //Check for overshooting Y destination
-        bool newPosYGreaterThanWaypointPosy = (transform.position.y + velocity.y) > wayPoint.y;
+        bool newPosYGreaterThanWaypointPosy = (transform.position.y + (velocity.y * Time.deltaTime)) > wayPoint.y;
         bool currPosYLessThanWaypointY = transform.position.y < wayPoint.y;
         //Apply it
-        if (newPosYGreaterThanWaypointPosy && currPosYLessThanWaypointY) velocity.y = wayPoint.y - transform.position.y;
+        if (newPosYGreaterThanWaypointPosy && currPosYLessThanWaypointY)
+        {
+            velocity.y = 0;// wayPoint.y - transform.position.y;
+            //transform.position = new Vector3(transform.position.x, wayPoint.y, transform.position.z);
+        }
 
         //apply movement to controller - use move to account for gravity effects 
         controller.Move(velocity * Time.deltaTime);
