@@ -20,12 +20,10 @@ public class ViewBeing : View, IBeingView
 
     public virtual void MoveAnimation()
     {
-        Vector3 x = being.directionVector;
-        Debug.Log(x);
+    }
 
-        //decide direction of aniamtion to play
-        //TODO: Decide what kind of movement to player here eg. run, walk, crawl.
-
+    public virtual void IdleAnimation()
+    {
     }
 }
 

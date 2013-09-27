@@ -106,9 +106,14 @@ public abstract class Being : MonoBehaviour
         {
             Move();
         }
-        else
+        else if (false)//Check if there are more Waypoints and make this is the new one if so
         {
-            //Check if there are more Waypoints and make this is the new one if so
+
+        }
+        else //nothing being done so idle
+        {
+            viewParent.IdleAnimation();
+            //it should be idling in attack mode inbet ween hits. THen fix it to ahve attack stance
         }
     }
 
@@ -121,6 +126,11 @@ public abstract class Being : MonoBehaviour
     {
         //In future it can take in a list of waypoints
         wayPoint = Pathfinding.GetNextWaypoint(transform.position, targetPosition);
+    }
+
+    public void AttackTarget()
+    {
+
     }
 
     /// <summary>
