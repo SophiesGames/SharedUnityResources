@@ -14,11 +14,11 @@ public class UserInputController : Controller
 	// Update is called once per frame
 	protected virtual void Update () 
     {
-        if (Input.GetButton("Click"))
-        {
-            //mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            //mouseWorldPosition.z = 0;
-            //controlledObject.CalculatePath(mouseWorldPosition);
-        }
+        //if (Input.GetButton("Click"))
+        //{
+        //    //mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        //    //mouseWorldPosition.z = 0;
+        //    //controlledObject.CalculatePath(mouseWorldPosition);
+        //}
 	}
 }

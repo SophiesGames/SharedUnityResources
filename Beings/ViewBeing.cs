@@ -25,6 +25,10 @@ public class ViewBeing : View, IBeingView
     public virtual void IdleAnimation()
     {
     }
+
+    public virtual void AttackAnimation()
+    {
+    }
 }
 
 

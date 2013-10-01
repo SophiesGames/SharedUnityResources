@@ -12,8 +12,10 @@ public abstract class Being : MonoBehaviour
 
     public int movementSpeed = 100;
     public int rotationSpeed = 10;
-    public int health;
-    public int attackSpeed;
+    public int health = 10;
+    public float attackSpeed = 2;
+    public int attackDamage = 1;
+    public int meleeRange = 7000;
 
     [HideInInspector]
     public Vector3 directionVector;
@@ -102,7 +104,6 @@ public abstract class Being : MonoBehaviour
     private void Update()
     {
         //Movement
-        //!HandyFunc.ApproximatelyEqual(
         if (transform.position != wayPoint)
         {
             Move();
@@ -127,11 +128,6 @@ public abstract class Being : MonoBehaviour
     {
         //In future it can take in a list of waypoints
         wayPoint = Pathfinding.GetNextWaypoint(transform.position, targetPosition);
-    }
-
-    public void AttackTarget()
-    {
-
     }
 
     /// <summary>
@@ -212,5 +208,10 @@ public abstract class Being : MonoBehaviour
         controller.Move(velocity * Time.deltaTime);
 
         viewParent.MoveAnimation();
+    }
+
+    public virtual void Attack()
+    {
+        viewParent.AttackAnimation();
     }
 }
