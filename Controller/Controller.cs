@@ -9,6 +9,7 @@ using System.Collections;
 /// </summary>
 public abstract class Controller : MonoBehaviour
 {
+
     protected Being controlledObject;
     // Use this for initialization
     protected virtual void Start()
@@ -24,5 +25,9 @@ public abstract class Controller : MonoBehaviour
 
          */
 
+    }
+
+    protected virtual void CancelCurrentCommand()
+    {
     }
 }

@@ -17,8 +17,12 @@ public abstract class Being : MonoBehaviour
     public int attackDamage = 1;
     public int meleeRange = 7000;
 
+    private float roundStartTime = 0;
+
     [HideInInspector]
     public Vector3 directionVector;
+
+    public Transform AttackTarget {get; set;}
 
     private float colliderHeight;
 
@@ -103,8 +107,12 @@ public abstract class Being : MonoBehaviour
     /// </summary>
     private void Update()
     {
+        if (AttackTarget != null)
+        {
+            Attack();
+        }
         //Movement
-        if (transform.position != wayPoint)
+        if (transform.position != wayPoint )
         {
             Move();
         }
@@ -210,8 +218,40 @@ public abstract class Being : MonoBehaviour
         viewParent.MoveAnimation();
     }
 
-    public virtual void Attack()
+    protected virtual void Attack()
     {
+        bool inRange = Vector3.SqrMagnitude(transform.position - AttackTarget.transform.position) < meleeRange;
+            // - 
+            //if within range attack
+            if (inRange)
+            {
+                Debug.Log("atacking" + Time.time);
+                if (roundStartTime == 0)
+                {
+                    roundStartTime = Time.time;
+                }
+                //else if more time has gone by than attack round time
+                else if ((Time.time - roundStartTime) >= attackSpeed)
+                {
+                    //reset timer
+                    viewParent.AttackAnimation();
+                    roundStartTime = 0;
+                }
+            }
+            //else move closer
+            else
+            {
+                CalculatePath(AttackTarget.transform.position);
+                //Move();
+            }
+        
+
         viewParent.AttackAnimation();
+}
+
+    public virtual void Pause()
+    {
+        //wayPoint = null; // need to stop the movement some other way
+        roundStartTime = 0;
     }
 }
