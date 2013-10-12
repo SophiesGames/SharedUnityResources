@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 
 
@@ -22,11 +23,11 @@ public abstract class Being : MonoBehaviour
     [HideInInspector]
     public Vector3 directionVector;
 
-    public Transform AttackTarget {get; set;}
+    public Transform AttackTarget { get; set; }
 
     private float colliderHeight;
 
-    private Vector3 wayPoint;
+    private List<Vector3> WayPointsList = new List<Vector3>();
     protected ViewBeing viewParent;
 
     public enum Direction
@@ -90,9 +91,25 @@ public abstract class Being : MonoBehaviour
     private void Start()
     {
         controller = GetComponent<CharacterController>();
-        wayPoint = transform.position;
         FindAndInitialiseView();
         colliderHeight = controller.transform.lossyScale.y;// transform.Find("HitBox").transform.lossyScale.y;
+    }
+
+    /// <summary>
+    /// checks collision with an other moving body and recalls pathfinding. May only work with overlap making this redundant.
+    /// </summary>
+    /// <param name="hit"></param>
+    void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        //check the player is actualy trying to go somewhere and hast jsut been bumped into.
+        if (WayPointsList.Count > 0)
+        {
+            //tell the hit you ahve collided and wokr something out so both your recalcualtions dont put you in the
+            //same path next time. May need to make this more complicated for intetional blocking.
+
+            //Recalcualte paths, presumably with the same destination as before.
+            CalculatePath(WayPointsList[WayPointsList.Count - 1]);
+        }
     }
 
     protected virtual void FindAndInitialiseView()
@@ -107,24 +124,33 @@ public abstract class Being : MonoBehaviour
     /// </summary>
     private void Update()
     {
+        bool isIdleThisFrame = true;
+        //Movement
+        if (WayPointsList.Count > 0)
+        {
+            if (transform.position != WayPointsList[0])
+            {
+                Move();
+            }
+            else//Removes this waypoint. Does not move this frame resulting in short pause but should work nicely with direction change.
+            {
+                WayPointsList.RemoveAt(0);
+            }
+            isIdleThisFrame = false;
+        }
+        //Attack
         if (AttackTarget != null)
         {
             Attack();
+            isIdleThisFrame = false;
         }
-        //Movement
-        if (transform.position != wayPoint )
-        {
-            Move();
-        }
-        else if (false)//Check if there are more Waypoints and make this is the new one if so
-        {
 
-        }
-        else //nothing being done so idle
+        //nothing being done so idle //check for aniamtion playing = null
+        if (viewParent.CurrentAnimation == null && isIdleThisFrame)
         {
             viewParent.IdleAnimation();
-            //it should be idling in attack mode inbet ween hits. THen fix it to ahve attack stance
         }
+
     }
 
     /// <summary>
@@ -134,8 +160,10 @@ public abstract class Being : MonoBehaviour
     /// <param name="finalDestinationPos"></param>
     public void CalculatePath(Vector3 targetPosition)
     {
+        //clears any other movement orders
+        WayPointsList.Clear();
         //In future it can take in a list of waypoints
-        wayPoint = Pathfinding.GetNextWaypoint(transform.position, targetPosition);
+        WayPointsList = Pathfinding.GetNextWaypoint(transform.position, targetPosition);
     }
 
     /// <summary>
@@ -144,6 +172,7 @@ public abstract class Being : MonoBehaviour
     /// <param name="destinationPosition"></param>
     protected virtual void Move()
     {
+        Vector3 wayPoint = WayPointsList[0];
         //Get direction
         directionVector = (wayPoint - transform.position);
         //Make direction vector 1, 0 or -1 
@@ -218,36 +247,43 @@ public abstract class Being : MonoBehaviour
         viewParent.MoveAnimation();
     }
 
+    /// <summary>
+    /// Only resets timer after an attack which only happens when in range
+    /// </summary>
     protected virtual void Attack()
     {
+        //Looks at current time so later on if its in range it can check the new current time. Big difference = time to attack!
+        if (roundStartTime == 0)
+        {
+            roundStartTime = Time.time;
+        }
+
         bool inRange = Vector3.SqrMagnitude(transform.position - AttackTarget.transform.position) < meleeRange;
-            // - 
-            //if within range attack
-            if (inRange)
+
+        //if within range attack
+        if (inRange)
+        {
+            //no longer need to get closer.
+            WayPointsList.Clear();
+
+            //If time bteween current time and time when round started is big then attack
+            if ((Time.time - roundStartTime) >= attackSpeed)
             {
-                Debug.Log("atacking" + Time.time);
-                if (roundStartTime == 0)
-                {
-                    roundStartTime = Time.time;
-                }
-                //else if more time has gone by than attack round time
-                else if ((Time.time - roundStartTime) >= attackSpeed)
-                {
-                    //reset timer
-                    viewParent.AttackAnimation();
-                    roundStartTime = 0;
-                }
+                //reset timer
+                viewParent.AttackAnimation();
+                roundStartTime = 0;
             }
-            //else move closer
             else
             {
-                CalculatePath(AttackTarget.transform.position);
-                //Move();
+                //play idle attack animation
             }
-        
-
-        viewParent.AttackAnimation();
-}
+        }
+        //else move closer
+        else
+        {
+            CalculatePath(AttackTarget.transform.position);
+        }
+    }
 
     public virtual void Pause()
     {

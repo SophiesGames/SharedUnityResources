@@ -15,7 +15,15 @@ public class AnimateSprite : MonoBehaviour
     //public bool refreshXML = false;
     public List<AnimationFrameSet> frameSetList = new List<AnimationFrameSet>();
 
-    private string playingFrameSetName;
+    public string CurrentlyPlayingFrameSetName
+    {
+        get
+        {
+            return autoPlayFrameSetName;
+        }
+    }
+
+    private string autoPlayFrameSetName;
     private AnimationTimer animationTimer;
     private Material materialInstance;
     private AnimationFrameSet animationFrameSet;
@@ -27,7 +35,7 @@ public class AnimateSprite : MonoBehaviour
     [HideInInspector]
     public Vector2 atlasDimension = new Vector2();
 
-    
+
 
 #if !UNITY_EDITOR
     private void Awake()                                             //For outside of unity
@@ -115,15 +123,15 @@ public class AnimateSprite : MonoBehaviour
 
     private void AutoCall()
     {
-        if (playingFrameSetName != null)
+        if (autoPlayFrameSetName != null)
         {
             //potential error. it is passing in animationFrameSet.reverseAnimation where animationFrameSet could be anything.
-            PlayAnimation(playingFrameSetName, 1, returnSignal);                        //call it again
+            PlayAnimation(autoPlayFrameSetName, 1, returnSignal);                        //call it again
         }
-		else if (animationTimer.animationTimeElapsed == 0)//if nothing else playing and timer been reset, cehck if anything needs to autoplay again.
-		{
-			InitialAutoPlay();//nothing playing so return to autoplay
-		}
+        else if (animationTimer.animationTimeElapsed == 0)//if nothing else playing and timer been reset, cehck if anything needs to autoplay again.
+        {
+            InitialAutoPlay();//nothing playing so return to autoplay
+        }
     }
 
     private void ParseFrames()
@@ -224,8 +232,8 @@ public class AnimateSprite : MonoBehaviour
 
     private int LastFrameBehaviour(int index)
     {
-		animationTimer.ResetTimer(animationFrameSet);
-		
+        animationTimer.ResetTimer(animationFrameSet);
+
         if (animationFrameSet.isLooping == true)                         //checks for looped animations and sets them back to the start
         {
             index = animationFrameSet.startingFrame;
@@ -240,7 +248,7 @@ public class AnimateSprite : MonoBehaviour
             {
                 index = animationFrameSet.endingFrame;
             }
-            playingFrameSetName = null;
+            autoPlayFrameSetName = null;
             if (returnSignal == true)
             {
                 isLastFrame = true;
@@ -256,8 +264,8 @@ public class AnimateSprite : MonoBehaviour
 
     private int LastFrameBehaviourReverse(int index)
     {
-		animationTimer.ResetTimer(animationFrameSet);
-		
+        animationTimer.ResetTimer(animationFrameSet);
+
         if (animationFrameSet.isLooping == true)                         //checks for looped animations and sets them back to the start
         {
             index = animationFrameSet.endingFrame;
@@ -272,7 +280,7 @@ public class AnimateSprite : MonoBehaviour
             {
                 index = animationFrameSet.startingFrame;
             }
-            playingFrameSetName = null;
+            autoPlayFrameSetName = null;
             if (returnSignal == true)
             {
                 this.gameObject.SendMessage("AnimationFinished", animationFrameSet.frameSetName);
@@ -330,9 +338,9 @@ public class AnimateSprite : MonoBehaviour
             IdentifyFrameSet(frameSetName);
         }
 
-        if (playingFrameSetName != animationFrameSet.frameSetName)                                  //if its a new aniamtion being played by the GO, then stop the autoPlay so it wont come on after without being recalled.
+        if (autoPlayFrameSetName != animationFrameSet.frameSetName)                                  //if its a new aniamtion being played by the GO, then stop the autoPlay so it wont come on after without being recalled.
         {
-            playingFrameSetName = null;
+            autoPlayFrameSetName = null;
         }
 
         if (animationTimer == null)                                  //if its a new aniamtion being played by the GO, then stop the autoPlay so it wont come on after without being recalled.
@@ -352,7 +360,7 @@ public class AnimateSprite : MonoBehaviour
 
         UpdateViewRect(index);
     }
-	
+
     /// <summary>
     /// Set loop numb and whether it should call a function you can use for code after unityAnim
     /// </summary>
@@ -365,27 +373,32 @@ public class AnimateSprite : MonoBehaviour
     /// <param name='_returnSignal'>
     /// Create AnimationFinished() func with the code you want to run on return. AnimationFinished() must be on script attached to go that the unityAnim was called for.
     /// </param>
-	public void PlayAnimation(string frameSetName, int playCycles, bool _returnSignal = false)
+    public void PlayAnimation(string frameSetName, int playCycles, bool _returnSignal = false)
     {
         returnSignal = _returnSignal;
-        playingFrameSetName = frameSetName;
+        autoPlayFrameSetName = frameSetName;
         PlayAnimation(frameSetName);                                            //plays aniamtion normally and gets the index to put into autoupdate func.
     }
-	
-//	public void PlayAnimation(string frameSetName, float playTime, bool _returnSignal = false)
-//    {
-//		//need to make this function.
-//		//look at how long the frameset fps is and how many frames ln it is an deduce how many play can be done in the allocated time. 
-//		//Then call the other function with the deduced play cycle number.Warning this wont be accurate most times as the frames wont divide nicely.
-//        returnSignal = _returnSignal;
-//        playingFrameSetName = frameSetName;
-//        PlayAnimation(frameSetName);                                            //plays aniamtion normally and gets the index to put into autoupdate func.
-//    }
 
-    public string FrameSetPlaying()
+    public void StopAnimation()
     {
-        return playingFrameSetName;
+        autoPlayFrameSetName = null;
     }
+
+    //	public void PlayAnimation(string frameSetName, float playTime, bool _returnSignal = false)
+    //    {
+    //		//need to make this function.
+    //		//look at how long the frameset fps is and how many frames ln it is an deduce how many play can be done in the allocated time. 
+    //		//Then call the other function with the deduced play cycle number.Warning this wont be accurate most times as the frames wont divide nicely.
+    //        returnSignal = _returnSignal;
+    //        playingFrameSetName = frameSetName;
+    //        PlayAnimation(frameSetName);                                            //plays aniamtion normally and gets the index to put into autoupdate func.
+    //    }
+
+    //public string FrameSetPlaying() REDUNDANT NOW AS PlayingFrameSetName is Property
+    //{
+    //    return PlayingFrameSetName;
+    //}
 }
 
 
