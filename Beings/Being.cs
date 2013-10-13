@@ -20,6 +20,8 @@ public abstract class Being : MonoBehaviour
 
     private float roundStartTime = 0;
 
+    private bool isAlive = true;
+
     [HideInInspector]
     public Vector3 directionVector;
 
@@ -124,33 +126,35 @@ public abstract class Being : MonoBehaviour
     /// </summary>
     private void Update()
     {
-        bool isIdleThisFrame = true;
-        //Movement
-        if (WayPointsList.Count > 0)
+        if (isAlive)
         {
-            if (transform.position != WayPointsList[0])
+            bool isIdleThisFrame = true;
+            //Movement
+            if (WayPointsList.Count > 0)
             {
-                Move();
+                if (transform.position != WayPointsList[0])
+                {
+                    Move();
+                }
+                else//Removes this waypoint. Does not move this frame resulting in short pause but should work nicely with direction change.
+                {
+                    WayPointsList.RemoveAt(0);
+                }
+                isIdleThisFrame = false;
             }
-            else//Removes this waypoint. Does not move this frame resulting in short pause but should work nicely with direction change.
+            //Attack
+            if (attackTargetTransform != null)
             {
-                WayPointsList.RemoveAt(0);
+                Attack();
+                isIdleThisFrame = false;
             }
-            isIdleThisFrame = false;
-        }
-        //Attack
-        if (attackTargetTransform != null)
-        {
-            Attack();
-            isIdleThisFrame = false;
-        }
 
-        //nothing being done so idle //check for aniamtion playing = null
-        if (viewParent.CurrentAnimation == null && isIdleThisFrame)
-        {
-            viewParent.IdleAnimation();
+            //nothing being done so idle //check for aniamtion playing = null
+            if (viewParent.CurrentAnimation == null && isIdleThisFrame)
+            {
+                viewParent.IdleAnimation();
+            }
         }
-
     }
 
     /// <summary>
@@ -308,8 +312,8 @@ public abstract class Being : MonoBehaviour
 
         if (health < 0)
         {
-            //play sound
-            //death
+            isAlive = false;
+            viewParent.DieAnimation();
         }
         else
         {
