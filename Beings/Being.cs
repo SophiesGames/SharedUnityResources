@@ -13,7 +13,7 @@ public abstract class Being : MonoBehaviour
 
     public int movementSpeed = 100;
     public int rotationSpeed = 10;
-    public int health = 10;
+    private int health = 10;
     public float attackSpeed = 2;
     public int attackDamage = 1;
     public int meleeRange = 7000;
@@ -23,7 +23,7 @@ public abstract class Being : MonoBehaviour
     [HideInInspector]
     public Vector3 directionVector;
 
-    public Transform AttackTarget { get; set; }
+    public Transform attackTargetTransform;
 
     private float colliderHeight;
 
@@ -139,7 +139,7 @@ public abstract class Being : MonoBehaviour
             isIdleThisFrame = false;
         }
         //Attack
-        if (AttackTarget != null)
+        if (attackTargetTransform != null)
         {
             Attack();
             isIdleThisFrame = false;
@@ -258,7 +258,7 @@ public abstract class Being : MonoBehaviour
             roundStartTime = Time.time;
         }
 
-        bool inRange = Vector3.SqrMagnitude(transform.position - AttackTarget.transform.position) < meleeRange;
+        bool inRange = Vector3.SqrMagnitude(transform.position - attackTargetTransform.transform.position) < meleeRange;
 
         //if within range attack
         if (inRange)
@@ -268,10 +268,12 @@ public abstract class Being : MonoBehaviour
 
             //If time bteween current time and time when round started is big then attack
             if ((Time.time - roundStartTime) >= attackSpeed)
-            {
-                //reset timer
+            { 
+                //play animation
                 viewParent.AttackAnimation();
+                //reset timer
                 roundStartTime = 0;
+                CalculateHit(this.transform, attackTargetTransform);
             }
             else
             {
@@ -281,7 +283,7 @@ public abstract class Being : MonoBehaviour
         //else move closer
         else
         {
-            CalculatePath(AttackTarget.transform.position);
+            CalculatePath(attackTargetTransform.transform.position);
         }
     }
 
@@ -289,5 +291,34 @@ public abstract class Being : MonoBehaviour
     {
         //wayPoint = null; // need to stop the movement some other way
         roundStartTime = 0;
+    }
+
+    private void CalculateHit(Transform attackerTransform, Transform defenderTransform)
+    {
+        Being defender = defenderTransform.GetComponent<Being>();
+        Being attacker = attackerTransform.GetComponent<Being>();
+
+        int atckDmg = attacker.attackDamage;
+        defender.TakeDamage(atckDmg);
+    }
+
+    public void TakeDamage(int damageReceived)
+    {
+        health =- damageReceived;
+
+        if (health < 0)
+        {
+            //play sound
+            //death
+        }
+        else
+        {
+            viewParent.DamagedAnimation();
+        }
+    }
+
+    public void Die()
+    {
+        viewParent.DieAnimation();
     }
 }

@@ -15,6 +15,8 @@ public class AnimateSprite : MonoBehaviour
     //public bool refreshXML = false;
     public List<AnimationFrameSet> frameSetList = new List<AnimationFrameSet>();
 
+    public List<Texture> availableTextures = new List<Texture>();
+
     public string CurrentlyPlayingFrameSetName
     {
         get
@@ -31,6 +33,8 @@ public class AnimateSprite : MonoBehaviour
     private bool returnSignal = false;
     private bool isLastFrame = false;
     private List<Rect> frames;
+
+    private string currentAnimFrameSetTextureName;
 
     [HideInInspector]
     public Vector2 atlasDimension = new Vector2();
@@ -158,13 +162,13 @@ public class AnimateSprite : MonoBehaviour
     {
         AnimationXML animationXML = new AnimationXML();
         SmallXmlParser smallXML = new SmallXmlParser();
-        TextAsset temp = (TextAsset)Resources.Load(XMLSheet);
+        TextAsset textAsset = (TextAsset)Resources.Load(XMLSheet);
 
-        if (temp == null)
+        if (textAsset == null)
         {
             Debug.LogError("Cannot find XMLSheet sheet for: " + this.gameObject.name + " on: " + this.transform.root.name);
         }
-        TextReader textReader = new StringReader(temp.text);
+        TextReader textReader = new StringReader(textAsset.text);
 
         smallXML.Parse(textReader, animationXML);
 
@@ -189,11 +193,13 @@ public class AnimateSprite : MonoBehaviour
 
     private void IdentifyFrameSet(string frameSetName)
     {
+        animationFrameSet = null;
         for (int i = 0; i < frameSetList.Count; i++)
         {
             if (frameSetList[i].frameSetName == frameSetName)                                                   //search for the desired frameset by checking name
             {
                 animationFrameSet = frameSetList[i];                                                            //fill animation frameset with desired frameset
+                if (animationFrameSet.textureName != currentAnimFrameSetTextureName) SwitchTexture(animationFrameSet.textureName); //if the texture the frameset wants to use is not currently set
                 break;
             }
         }
@@ -332,7 +338,6 @@ public class AnimateSprite : MonoBehaviour
     {
         int index;
 
-        //Debug.Log("animationFrameSet " + animationFrameSet);
         if (animationFrameSet == null || animationFrameSet.frameSetName != frameSetName)            //check animationFrameSet needs to be assigned a new frameset
         {
             IdentifyFrameSet(frameSetName);
@@ -347,8 +352,6 @@ public class AnimateSprite : MonoBehaviour
         {
             Debug.LogError("animationTimer is null for " + this.name + "when calling" + animationFrameSet.frameSetName + ". Make sure you are not calling PlayAnimation() before it has time to intialise");
         }
-        //Debug.Log("animationFrameSet.frameSetName " + animationFrameSet.frameSetName);
-        //Debug.Log("animationTimer " + animationTimer);
 
         animationTimer.UpdateElapsedTime(animationFrameSet);
 
@@ -383,6 +386,26 @@ public class AnimateSprite : MonoBehaviour
     public void StopAnimation()
     {
         autoPlayFrameSetName = null;
+    }
+
+    public void SwitchTexture(string newTextureName)
+    {
+        bool textureFound = false;
+        foreach (var item in availableTextures)
+        {
+            if (item.name == newTextureName)
+            {
+                this.renderer.sharedMaterial.mainTexture = item;
+                textureFound = true;
+                break;
+            }
+        }
+        if (!textureFound) Debug.LogError("No texture found with name: " + newTextureName+ ". Make sure you add the texture to the Available texture list and it ahs the same name as the frameset textures name.");
+
+        currentAnimFrameSetTextureName = this.renderer.sharedMaterial.mainTexture.name;
+
+        //reset settings
+        ParseFrames();
     }
 
     //	public void PlayAnimation(string frameSetName, float playTime, bool _returnSignal = false)

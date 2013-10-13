@@ -14,6 +14,13 @@ public class AIController : Controller
 
     private int counter = 0;
 
+    protected Being controlledObject;
+    // Use this for initialization
+    protected virtual void Start()
+    {
+        controlledObject = this.gameObject.GetComponent<Being>();
+    }
+
     protected virtual void Update()
     {
         if (counter > directionChangeInterval)

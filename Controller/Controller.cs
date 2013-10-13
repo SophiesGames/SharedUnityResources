@@ -10,12 +10,7 @@ using System.Collections;
 public abstract class Controller : MonoBehaviour
 {
 
-    protected Being controlledObject;
-    // Use this for initialization
-    protected virtual void Start()
-    {
-        controlledObject = this.gameObject.GetComponent<Being>();
-    }
+
 
     // Update is called once per frame
     void Update()

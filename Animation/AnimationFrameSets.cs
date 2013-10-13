@@ -16,6 +16,9 @@ public class AnimationFrameSet
     public bool bounceAnimation = false;
 
     public bool reverseAnimation = false;
+
+    public string textureName;
+
     public bool applyFrameSet = false;
 
     [HideInInspector]

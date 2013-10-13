@@ -38,6 +38,14 @@ public class ViewBeing : View, IBeingView
     public virtual void AttackAnimation()
     {
     }
+
+    public virtual void DamagedAnimation()
+    {
+    }
+
+    public virtual void DieAnimation()
+    {
+    }
 }
 
 
