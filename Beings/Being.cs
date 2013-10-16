@@ -21,6 +21,8 @@ public abstract class Being : MonoBehaviour
     private float roundStartTime = 0;
 
     private bool isAlive = true;
+    private Being attacker;
+    private Being defender;
 
     [HideInInspector]
     public Vector3 directionVector;
@@ -273,11 +275,9 @@ public abstract class Being : MonoBehaviour
             //If time bteween current time and time when round started is big then attack
             if ((Time.time - roundStartTime) >= attackSpeed)
             { 
-                //play animation
-                viewParent.AttackAnimation();
                 //reset timer
                 roundStartTime = 0;
-                CalculateHit(this.transform, attackTargetTransform);
+                AttackPreparation(this.transform, attackTargetTransform);
             }
             else
             {
@@ -297,29 +297,33 @@ public abstract class Being : MonoBehaviour
         roundStartTime = 0;
     }
 
-    private void CalculateHit(Transform attackerTransform, Transform defenderTransform)
+    private void AttackPreparation(Transform attackerTransform, Transform defenderTransform)
     {
-        Being defender = defenderTransform.GetComponent<Being>();
-        Being attacker = attackerTransform.GetComponent<Being>();
+        defender = defenderTransform.GetComponent<Being>();
+        attacker = attackerTransform.GetComponent<Being>();
 
-        int atckDmg = attacker.attackDamage;
-        defender.TakeDamage(atckDmg);
+        viewParent.AttackAnimation();
     }
 
-    public void TakeDamage(int damageReceived)
+    public void AttackImpact()
     {
-        health =- damageReceived;
+        defender.health = defender.health - attacker.attackDamage;
 
-        if (health < 0)
+        if (defender.health < 0)
         {
-            isAlive = false;
-            viewParent.DieAnimation();
+            defender.isAlive = false;
+            defender.viewParent.DieAnimation();
         }
         else
         {
-            viewParent.DamagedAnimation();
+            defender.viewParent.DamagedAnimation();
         }
     }
+
+    public void AttackOver(int damageReceived)
+    {
+    }
+
 
     public void Die()
     {

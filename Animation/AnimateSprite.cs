@@ -12,6 +12,9 @@ using UnityEditor;
 [ExecuteInEditMode]
 public class AnimateSprite : MonoBehaviour
 {
+    public delegate void FunctionPointer();
+    public FunctionPointer CallBackMethod;
+
     //public bool refreshXML = false;
     public List<AnimationFrameSet> frameSetList = new List<AnimationFrameSet>();
 
@@ -33,13 +36,12 @@ public class AnimateSprite : MonoBehaviour
     private bool returnSignal = false;
     private bool isLastFrame = false;
     private List<Rect> frames;
+    private int frameIndexForCallBack;
 
     private string currentAnimFrameSetTextureName;
 
     [HideInInspector]
     public Vector2 atlasDimension = new Vector2();
-
-
 
 #if !UNITY_EDITOR
     private void Awake()                                             //For outside of unity
@@ -212,6 +214,11 @@ public class AnimateSprite : MonoBehaviour
     private int FindIndex()
     {
         float index = (animationFrameSet.framesPerSecond * animationTimer.animationTimeElapsed);                                 //the currentFrame number will be the number of frames each second * how many seconds have gone by
+        //callback if its set
+        if (CallBackMethod != null && frameIndexForCallBack < index)
+        {
+            CallBackMethod();
+        }
 
         if (index > animationFrameSet.framesInSet)                                                              //if the index is past the total frames
         {
@@ -383,6 +390,13 @@ public class AnimateSprite : MonoBehaviour
         PlayAnimation(frameSetName);                                            //plays aniamtion normally and gets the index to put into autoupdate func.
     }
 
+    public void PlayAnimation(string frameSetName, int playCycles, int framesUntillCallBack)
+    {
+        frameIndexForCallBack = framesUntillCallBack;
+        autoPlayFrameSetName = frameSetName;
+        PlayAnimation(frameSetName);
+    }
+
     public void StopAnimation()
     {
         autoPlayFrameSetName = null;
@@ -400,7 +414,7 @@ public class AnimateSprite : MonoBehaviour
                 break;
             }
         }
-        if (!textureFound) Debug.LogError("No texture found with name: " + newTextureName+ ". Make sure you add the texture to the Available texture list and it ahs the same name as the frameset textures name.");
+        if (!textureFound) Debug.LogError("No texture found with name: " + newTextureName+ ". Make sure you add the texture to the Available texture list and it has the same name as the frameset textures name.");
 
         currentAnimFrameSetTextureName = this.renderer.sharedMaterial.mainTexture.name;
 
