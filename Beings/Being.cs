@@ -13,7 +13,7 @@ public abstract class Being : MonoBehaviour
 
     public int movementSpeed = 100;
     public int rotationSpeed = 10;
-    private int health = 10;
+    public int health = 10;
     public float attackSpeed = 2;
     public int attackDamage = 1;
     public int meleeRange = 7000;
@@ -29,7 +29,6 @@ public abstract class Being : MonoBehaviour
 
     public Transform attackTargetTransform;
 
-    private float colliderHeight;
 
     private List<Vector3> WayPointsList = new List<Vector3>();
     protected ViewBeing viewParent;
@@ -96,7 +95,6 @@ public abstract class Being : MonoBehaviour
     {
         controller = GetComponent<CharacterController>();
         FindAndInitialiseView();
-        colliderHeight = controller.transform.lossyScale.y;// transform.Find("HitBox").transform.lossyScale.y;
     }
 
     /// <summary>
@@ -246,8 +244,7 @@ public abstract class Being : MonoBehaviour
                 transform.position = new Vector3(transform.position.x, wayPoint.y, transform.position.z);
             }
         }
-
-        //apply movement to controller - use move to account for gravity effects 
+        GA.API.Design.NewEvent("Moved", 1.2f, transform.position); 
         controller.Move(velocity * Time.deltaTime);
 
         viewParent.MoveAnimation();
@@ -313,6 +310,11 @@ public abstract class Being : MonoBehaviour
         {
             defender.isAlive = false;
             defender.viewParent.DieAnimation();
+            defender.enabled = false; //turn of script
+            attackTargetTransform.transform.GetComponent<AIController>().enabled = false;
+            attackTargetTransform.transform.GetComponent<CharacterController>().enabled = false;
+            attackTargetTransform.transform.Find("View/ColliderFeedback").gameObject.SetActive(false);
+            attacker.attackTargetTransform = null;
         }
         else
         {

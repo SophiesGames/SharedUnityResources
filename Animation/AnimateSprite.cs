@@ -27,6 +27,7 @@ public class AnimateSprite : MonoBehaviour
             return autoPlayFrameSetName;
         }
     }
+    public int currentFrame;
 
     private string autoPlayFrameSetName;
     private AnimationTimer animationTimer;
@@ -218,6 +219,7 @@ public class AnimateSprite : MonoBehaviour
         if (CallBackMethod != null && frameIndexForCallBack < index)
         {
             CallBackMethod();
+            CallBackMethod = null;
         }
 
         if (index > animationFrameSet.framesInSet)                                                              //if the index is past the total frames
@@ -369,6 +371,7 @@ public class AnimateSprite : MonoBehaviour
         else { index = FindIndex(); }
 
         UpdateViewRect(index);
+        currentFrame = index;
     }
 
     /// <summary>
