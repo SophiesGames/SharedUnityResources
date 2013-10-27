@@ -25,4 +25,21 @@ public abstract class Controller : MonoBehaviour
     protected virtual void CancelCurrentCommand()
     {
     }
+    /// <summary>
+    /// default implementation
+    /// </summary>
+    public virtual void AttemptedAttack(Transform attacker)
+    {
+        this.transform.GetComponent<Being>().attackTargetTransform = attacker;
+        //Aggressive mode
+        /*
+         * Load rules based on how it fights eg: a bear attacks who ever first htis it then whoever is closest
+         * A amastermind might try to first split the group up then pick of the weakest first.
+         * 
+         * How intelleingt you fight and how you even respond to things is based on your behviours.
+         * These can be children of this class.
+         * 
+         */
+
+    }
 }

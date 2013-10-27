@@ -37,4 +37,14 @@ public class AIController : Controller
 
         counter++;
     }
+
+    public override void AttemptedAttack(Transform attacker)
+    {
+        base.AttemptedAttack(attacker);
+        //turn aggresive
+        Debug.Log("Turn aggressive");
+
+
+
+    }
 }

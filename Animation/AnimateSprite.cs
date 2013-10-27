@@ -27,7 +27,9 @@ public class AnimateSprite : MonoBehaviour
             return autoPlayFrameSetName;
         }
     }
-    public int currentFrame;
+
+    [SerializeField] 
+    private int currentFrame;
 
     private string autoPlayFrameSetName;
     private AnimationTimer animationTimer;

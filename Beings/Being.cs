@@ -2,20 +2,18 @@
 using System.Collections;
 using System.Collections.Generic;
 
-
-
 /// <summary>
 /// Anythign that exists with some kind of health
 /// </summary>
 public abstract class Being : MonoBehaviour
 {
-    private CharacterController controller;
+    private CharacterController characterController;
 
     public int movementSpeed = 100;
     public int rotationSpeed = 10;
     public int health = 10;
     public float attackSpeed = 2;
-    public int attackDamage = 1;
+    public int attackDamage;
     public int meleeRange = 7000;
 
     private float roundStartTime = 0;
@@ -23,6 +21,11 @@ public abstract class Being : MonoBehaviour
     private bool isAlive = true;
     private Being attacker;
     private Being defender;
+
+    public Weapon equipedWeapon;
+    private Armour equipedArmour;
+
+    private int strength = 1;
 
     [HideInInspector]
     public Vector3 directionVector;
@@ -93,8 +96,9 @@ public abstract class Being : MonoBehaviour
 
     private void Start()
     {
-        controller = GetComponent<CharacterController>();
+        characterController = GetComponent<CharacterController>();
         FindAndInitialiseView();
+        equipedWeapon = new Fist();
     }
 
     /// <summary>
@@ -245,7 +249,7 @@ public abstract class Being : MonoBehaviour
             }
         }
         GA.API.Design.NewEvent("Moved", 1.2f, transform.position); 
-        controller.Move(velocity * Time.deltaTime);
+        characterController.Move(velocity * Time.deltaTime);
 
         viewParent.MoveAnimation();
     }
@@ -288,10 +292,11 @@ public abstract class Being : MonoBehaviour
         }
     }
 
-    public virtual void Pause()
+    public virtual void ClearAllCommands()
     {
         //wayPoint = null; // need to stop the movement some other way
         roundStartTime = 0;
+        attackTargetTransform = null;
     }
 
     private void AttackPreparation(Transform attackerTransform, Transform defenderTransform)
@@ -299,11 +304,22 @@ public abstract class Being : MonoBehaviour
         defender = defenderTransform.GetComponent<Being>();
         attacker = attackerTransform.GetComponent<Being>();
 
+        //player controlled characters dont actualy have a controller on them as its on the main camera.
+        //Has to do something like give the PC's a default ai script, which is overriden by mouse orders.
+        //These orders expire at the end and ai takes over for meantime.
+        Controller controller = (Controller)defenderTransform.GetComponent<Controller>();
+        if (controller == null)
+        {
+            
+        }
+        controller.AttemptedAttack(defenderTransform);
         viewParent.AttackAnimation();
     }
 
     public void AttackImpact()
     {
+        attackDamage = equipedWeapon.GetDamage() + strength;
+
         defender.health = defender.health - attacker.attackDamage;
 
         if (defender.health < 0)
