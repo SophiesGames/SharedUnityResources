@@ -19,6 +19,7 @@ public class AnimateSprite : MonoBehaviour
     public List<AnimationFrameSet> frameSetList = new List<AnimationFrameSet>();
 
     public List<Texture> availableTextures = new List<Texture>();
+    public List<TextAsset> SpriteInfoXMLs = new List<TextAsset>();
 
     public string CurrentlyPlayingFrameSetName
     {
@@ -127,6 +128,7 @@ public class AnimateSprite : MonoBehaviour
 
     private void Start()
     {
+        //SpriteInfoXMLs.Capacity = availableTextures.Count;
         InitialAutoPlay();
     }
 
@@ -167,12 +169,13 @@ public class AnimateSprite : MonoBehaviour
     {
         AnimationXML animationXML = new AnimationXML();
         SmallXmlParser smallXML = new SmallXmlParser();
-        TextAsset textAsset = (TextAsset)Resources.Load(XMLSheet);
 
+        TextAsset textAsset = SpriteInfoXMLs.Find(x => x.name == XMLSheet); 
         if (textAsset == null)
         {
-            Debug.LogError("Cannot find XMLSheet sheet for: " + this.gameObject.name + " on: " + this.transform.root.name);
+            Debug.LogError("The spritesheet, " + XMLSheet + ", does not have an XML sheet with a matching name for " + this.gameObject.name + "on the root " + this.transform.root.name);
         }
+
         TextReader textReader = new StringReader(textAsset.text);
 
         smallXML.Parse(textReader, animationXML);
