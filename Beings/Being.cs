@@ -259,6 +259,10 @@ public abstract class Being : MonoBehaviour
     /// </summary>
     protected virtual void Attack()
     {
+		if(this.gameObject.name == "Enemy")
+		{
+			int df = 4;
+		}
         //Looks at current time so later on if its in range it can check the new current time. Big difference = time to attack!
         if (roundStartTime == 0)
         {
@@ -312,7 +316,7 @@ public abstract class Being : MonoBehaviour
         {
             
         }
-        controller.AttemptedAttack(defenderTransform);
+        controller.AttemptedAttack(aTransform);
         viewParent.AttackAnimation();
     }
 
@@ -327,7 +331,7 @@ public abstract class Being : MonoBehaviour
             defender.isAlive = false;
             defender.viewParent.DieAnimation();
             defender.enabled = false; //turn of script
-            attackTargetTransform.transform.GetComponent<AIController>().enabled = false;
+            attackTargetTransform.transform.GetComponent<AI_BasicController>().enabled = false;
             attackTargetTransform.transform.GetComponent<CharacterController>().enabled = false;
             attackTargetTransform.transform.Find("View/ColliderFeedback").gameObject.SetActive(false);
             attacker.attackTargetTransform = null;

@@ -29,13 +29,13 @@ public class MouseController : UserInputController
             if (Physics.Raycast(ray, out hit, 100))
             {
                 //the hit is a character that doesnt ahve a controller
-                if (hit.transform.GetComponent(typeof(Being)) && !hit.transform.GetComponent(typeof(AIController)))
+                if (hit.transform.GetComponent(typeof(Being)) && !hit.transform.GetComponent(typeof(AI_NPC_Controller)))
                 {
                     selectedCharacter = (Being)hit.transform.GetComponent(typeof(Being));
                 }
 
                 //the hit is an ai character
-                if (hit.transform.GetComponent(typeof(AIController)))
+                if (hit.transform.GetComponent(typeof(AI_BasicController)))
                 {
                     //show picture of enemy?
                 }
@@ -75,7 +75,7 @@ public class MouseController : UserInputController
                 if (Physics.Raycast(ray, out hit, 100))
                 {
                     //the hit is an ai character
-                    if (hit.transform.GetComponent(typeof(AIController)))
+                    if (hit.transform.GetComponent(typeof(AI_BasicController)))
                     {
                         selectedCharacter.attackTargetTransform = hit.transform;
                     }
