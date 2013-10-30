@@ -316,7 +316,7 @@ public abstract class Being : MonoBehaviour
         {
             
         }
-        controller.AttemptedAttack(aTransform);
+        controller.AttemptedAttack(attackerTransform);
         viewParent.AttackAnimation();
     }
 
