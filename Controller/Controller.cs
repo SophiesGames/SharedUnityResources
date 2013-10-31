@@ -28,9 +28,9 @@ public abstract class Controller : MonoBehaviour
     /// <summary>
     /// default implementation
     /// </summary>
-    public virtual void AttemptedAttack(Transform attacker)
+    public virtual void AlertVictimController(Transform attacker)
     {
-        this.transform.GetComponent<Being>().attackTargetTransform = attacker;
+        this.transform.GetComponent<Being>().AttackTargetTransform = attacker;
         //Aggressive mode
         /*
          * Load rules based on how it fights eg: a bear attacks who ever first htis it then whoever is closest

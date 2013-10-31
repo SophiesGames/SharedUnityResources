@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 /// <summary>
@@ -10,9 +10,9 @@ using System.Collections;
 /// </summary>
 public class AI_BasicController : Controller
 {
-    public override void AttemptedAttack(Transform attacker)
+    public override void AlertVictimController(Transform attacker)
     {
-        base.AttemptedAttack(attacker);
+        base.AlertVictimController(attacker);
         //turn aggresive
         Debug.Log("Turn aggressive");
 

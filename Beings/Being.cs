@@ -28,10 +28,9 @@ public abstract class Being : MonoBehaviour
     private int strength = 1;
 
     [HideInInspector]
-    public Vector3 directionVector;
+    public Vector3 facingDirection;
 
-    public Transform attackTargetTransform;
-
+	public Transform AttackTargetTransform {get; set;}
 
     private List<Vector3> WayPointsList = new List<Vector3>();
     protected ViewBeing viewParent;
@@ -41,59 +40,7 @@ public abstract class Being : MonoBehaviour
         North, NorthWest, West, SouthWest, South, SouthEast, East, NorthEast
     }
 
-    public Direction GetDirection
-    {
-        get
-        {
-            //default is south
-            Direction curentDirection = Direction.South;
-
-            if (directionVector.x > 0)
-            {
-                if (directionVector.y > 0)
-                {
-                    curentDirection = Direction.NorthEast;
-                }
-                else if (directionVector.y < 0)
-                {
-                    curentDirection = Direction.SouthEast;
-                }
-                else
-                {
-                    curentDirection = Direction.East;
-                }
-            }
-            else if (directionVector.x < 0)
-            {
-
-                if (directionVector.y > 0)
-                {
-                    curentDirection = Direction.NorthWest;
-                }
-                else if (directionVector.y < 0)
-                {
-                    curentDirection = Direction.SouthWest;
-                }
-                else
-                {
-                    curentDirection = Direction.West;
-                }
-            }
-            else
-            {
-                if (directionVector.y > 0)
-                {
-                    curentDirection = Direction.North;
-                }
-                else if (directionVector.y < 0)
-                {
-                    curentDirection = Direction.South;
-                }
-            }
-            return curentDirection;
-        }
-    }
-
+    
     private void Start()
     {
         characterController = GetComponent<CharacterController>();
@@ -147,9 +94,9 @@ public abstract class Being : MonoBehaviour
                 isIdleThisFrame = false;
             }
             //Attack
-            if (attackTargetTransform != null)
+            if (AttackTargetTransform != null)
             {
-                Attack();
+                AttackModeUpdate();
                 isIdleThisFrame = false;
             }
 
@@ -182,26 +129,14 @@ public abstract class Being : MonoBehaviour
     {
         Vector3 wayPoint = WayPointsList[0];
         //Get direction
-        directionVector = (wayPoint - transform.position);
-        //Make direction vector 1, 0 or -1 
-        if (directionVector.x < 0)
-        {
-            directionVector.x = -1;
-        }
-        else if (directionVector.x > 0) directionVector.x = 1;
-        else directionVector.x = 0;
-        if (directionVector.y < 0) directionVector.y = -1;
-        else if (directionVector.y > 0) directionVector.y = 1;
-        else directionVector.y = 0;
-        //2d games so z is ignored
-        directionVector.z = 0;
+        facingDirection = FacePoint(wayPoint);// 
 
         //move in the right direction by speed.
-        Vector3 velocity = movementSpeed * directionVector;
+        Vector3 velocity = movementSpeed * facingDirection;
 
 
         //Check for overshooting X destination to the right(it has to be checked with delta time as that makes it much smaller)
-        if (directionVector.x == 1)
+        if (facingDirection.x == 1)
         {
             bool newPosXGreaterThanWaypointPosx = (transform.position.x + (velocity.x * Time.deltaTime)) > wayPoint.x;
             bool currPosXLessThanWaypointX = transform.position.x < wayPoint.x;
@@ -212,7 +147,7 @@ public abstract class Being : MonoBehaviour
             }
         }
         //check to the elft
-        else if (directionVector.x == -1)
+        else if (facingDirection.x == -1)
         {
             bool newPosXLessThanWaypointPosx = (transform.position.x + (velocity.x * Time.deltaTime)) < wayPoint.x;
             bool currPosXGreaterThanWaypointX = transform.position.x > wayPoint.x;
@@ -225,7 +160,7 @@ public abstract class Being : MonoBehaviour
         //otherwise it doesnt matter
 
         //Check for overshooting Y destination to the top
-        if (directionVector.y == 1)
+        if (facingDirection.y == 1)
         {
             bool newPosYGreaterThanWaypointPosy = (transform.position.y + (velocity.y * Time.deltaTime)) > wayPoint.y;
             bool currPosYLessThanWaypointY = transform.position.y < wayPoint.y;
@@ -237,7 +172,7 @@ public abstract class Being : MonoBehaviour
             }
         }
         //Check for overshooting Y destination to the bottom
-        else if (directionVector.y == -1)
+        else if (facingDirection.y == -1)
         {
             bool newPosYLessThanWaypointPosy = (transform.position.y + (velocity.y * Time.deltaTime)) < wayPoint.y;
             bool currPosYGreaterThanWaypointY = transform.position.y > wayPoint.y;
@@ -257,19 +192,15 @@ public abstract class Being : MonoBehaviour
     /// <summary>
     /// Only resets timer after an attack which only happens when in range
     /// </summary>
-    protected virtual void Attack()
+    protected virtual void AttackModeUpdate()
     {
-		if(this.gameObject.name == "Enemy")
-		{
-			int df = 4;
-		}
+		//Always face target in fight
+		facingDirection = FacePoint(AttackTargetTransform.position);
+		
         //Looks at current time so later on if its in range it can check the new current time. Big difference = time to attack!
-        if (roundStartTime == 0)
-        {
-            roundStartTime = Time.time;
-        }
+        if (roundStartTime == 0) roundStartTime = Time.time;
 
-        bool inRange = Vector3.SqrMagnitude(transform.position - attackTargetTransform.transform.position) < meleeRange;
+        bool inRange = Vector3.SqrMagnitude(transform.position - AttackTargetTransform.transform.position) < meleeRange;
 
         //if within range attack
         if (inRange)
@@ -282,7 +213,7 @@ public abstract class Being : MonoBehaviour
             { 
                 //reset timer
                 roundStartTime = 0;
-                AttackPreparation(this.transform, attackTargetTransform);
+                AttackPreparation(this.transform, AttackTargetTransform);
             }
             else
             {
@@ -292,7 +223,7 @@ public abstract class Being : MonoBehaviour
         //else move closer
         else
         {
-            CalculatePath(attackTargetTransform.transform.position);
+            CalculatePath(AttackTargetTransform.transform.position);
         }
     }
 
@@ -300,7 +231,7 @@ public abstract class Being : MonoBehaviour
     {
         //wayPoint = null; // need to stop the movement some other way
         roundStartTime = 0;
-        attackTargetTransform = null;
+        AttackTargetTransform = null;
     }
 
     private void AttackPreparation(Transform attackerTransform, Transform defenderTransform)
@@ -312,11 +243,7 @@ public abstract class Being : MonoBehaviour
         //Has to do something like give the PC's a default ai script, which is overriden by mouse orders.
         //These orders expire at the end and ai takes over for meantime.
         Controller controller = (Controller)defenderTransform.GetComponent<Controller>();
-        if (controller == null)
-        {
-            
-        }
-        controller.AttemptedAttack(attackerTransform);
+        controller.AlertVictimController(attackerTransform);
         viewParent.AttackAnimation();
     }
 
@@ -331,10 +258,10 @@ public abstract class Being : MonoBehaviour
             defender.isAlive = false;
             defender.viewParent.DieAnimation();
             defender.enabled = false; //turn of script
-            attackTargetTransform.transform.GetComponent<AI_BasicController>().enabled = false;
-            attackTargetTransform.transform.GetComponent<CharacterController>().enabled = false;
-            attackTargetTransform.transform.Find("View/ColliderFeedback").gameObject.SetActive(false);
-            attacker.attackTargetTransform = null;
+            AttackTargetTransform.transform.GetComponent<AI_BasicController>().enabled = false;
+            AttackTargetTransform.transform.GetComponent<CharacterController>().enabled = false;
+            AttackTargetTransform.transform.Find("View/ColliderFeedback").gameObject.SetActive(false);
+            attacker.AttackTargetTransform = null;
         }
         else
         {
@@ -351,4 +278,79 @@ public abstract class Being : MonoBehaviour
     {
         viewParent.DieAnimation();
     }
+	
+	public Vector3 FacePoint(Vector3 point)
+	{
+		Vector3 facingDirection = (point - transform.position);
+        //Make direction vector 1, 0 or -1 
+        if (facingDirection.x < 0)
+        {
+            facingDirection.x = -1;
+        }
+        else if (facingDirection.x > 0) facingDirection.x = 1;
+        else facingDirection.x = 0;
+        if (facingDirection.y < 0) facingDirection.y = -1;
+        else if (facingDirection.y > 0) facingDirection.y = 1;
+        else facingDirection.y = 0;
+        //2d games so z is ignored
+        facingDirection.z = 0;
+		
+		return facingDirection;
+	}
+	
+	public Direction GetDirection
+    {
+        get
+        {
+            //default is south
+            Direction curentDirection = Direction.South;
+
+            if (facingDirection.x > 0)
+            {
+                if (facingDirection.y > 0)
+                {
+                    curentDirection = Direction.NorthEast;
+                }
+                else if (facingDirection.y < 0)
+                {
+                    curentDirection = Direction.SouthEast;
+                }
+                else
+                {
+                    curentDirection = Direction.East;
+                }
+            }
+            else if (facingDirection.x < 0)
+            {
+
+                if (facingDirection.y > 0)
+                {
+                    curentDirection = Direction.NorthWest;
+                }
+                else if (facingDirection.y < 0)
+                {
+                    curentDirection = Direction.SouthWest;
+                }
+                else
+                {
+                    curentDirection = Direction.West;
+                }
+            }
+            else
+            {
+                if (facingDirection.y > 0)
+                {
+                    curentDirection = Direction.North;
+                }
+                else if (facingDirection.y < 0)
+                {
+                    curentDirection = Direction.South;
+                }
+            }
+            return curentDirection;
+        }
+    }
+
+	
+	
 }

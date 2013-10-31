@@ -77,7 +77,7 @@ public class MouseController : UserInputController
                     //the hit is an ai character
                     if (hit.transform.GetComponent(typeof(AI_BasicController)))
                     {
-                        selectedCharacter.attackTargetTransform = hit.transform;
+                        selectedCharacter.AttackTargetTransform = hit.transform;
                     }
                 }
                 //Nothing was hit so its the floor
