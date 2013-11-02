@@ -15,7 +15,8 @@ public abstract class Being : MonoBehaviour
     public float attackSpeed = 2;
     public int attackDamage;
     public int meleeRange = 7000;
-
+	public int freeAttack;
+	
     private float roundStartTime = 0;
 
     private bool isAlive = true;
@@ -213,8 +214,9 @@ public abstract class Being : MonoBehaviour
             WayPointsList.Clear();
 
             //If time bteween current time and time when round started is big then attack
-            if ((Time.time - roundStartTime) >= attackSpeed)
+            if ((Time.time - roundStartTime) >= attackSpeed || freeAttack > 0)
             { 
+				
                 //reset timer
                 roundStartTime = 0;
                 AttackPreparation(this.transform, AttackTargetTransform);

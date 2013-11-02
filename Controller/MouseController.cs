@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 /// <summary>
 /// Mouse and keyboard controller take the selected person(s) and can change whats selected. They lsiten for ui changes
-/// and tell the selected person(s) controller about that. Their controller then performs the right descicion.
+/// and tell the selectedselectedCharacter person(s) controller about that. Their controller then performs the right descicion.
 /// It mgiht be the mid controller is not needed. See UserInputControllerQI for potential use for it.
 /// </summary>
 public class MouseController : UserInputController
@@ -78,6 +78,9 @@ public class MouseController : UserInputController
                     if (hit.transform.GetComponent(typeof(AI_BasicController)))
                     {
                         selectedCharacter.AttackTargetTransform = hit.transform;
+						
+						//if you 
+						selectedCharacter.freeAttack++;
                     }
                 }
                 //Nothing was hit so its the floor
