@@ -10,10 +10,12 @@ using System.Collections;
 /// </summary>
 public class AI_BasicController : Controller
 {
+	public bool IsHostile;// {get; set;}
     public override void AlertVictimController(Transform attacker)
     {
         base.AlertVictimController(attacker);
         //turn aggresive
+		IsHostile = true;
         Debug.Log("Turn aggressive");
 
     }

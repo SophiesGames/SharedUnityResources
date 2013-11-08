@@ -15,6 +15,9 @@ public class MouseController : UserInputController
         destinationLocator = ObjectPool.transform.Find("DestinationWayPoint");
     }
 
+	//need a mouse over that changes the icon based on the type of enemy it is over
+	//if the icon is not on default this will not happend. default for going over pc is talking icon.
+	
     public void Update()
     {
         //Left Click = selections

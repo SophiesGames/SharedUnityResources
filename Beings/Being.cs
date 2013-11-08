@@ -33,8 +33,6 @@ public abstract class Being : MonoBehaviour
 
 	public Transform AttackTargetTransform {get; set;}
 	
-	
-
     private List<Vector3> WayPointsList = new List<Vector3>();
     protected ViewBeing viewParent;
 
