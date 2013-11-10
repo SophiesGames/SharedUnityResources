@@ -220,12 +220,6 @@ public class AnimateSprite : MonoBehaviour
     private int FindIndex()
     {
         float index = (animationFrameSet.framesPerSecond * animationTimer.animationTimeElapsed);                                 //the currentFrame number will be the number of frames each second * how many seconds have gone by
-        //callback if its set
-        if (CallBackMethod != null && frameIndexForCallBack < index)
-        {
-            CallBackMethod();
-            CallBackMethod = null;
-        }
 
         if (index > animationFrameSet.framesInSet)                                                              //if the index is past the total frames
         {
@@ -374,6 +368,13 @@ public class AnimateSprite : MonoBehaviour
             index = FindIndexInReverse();                                                           //reverse code
         }
         else { index = FindIndex(); }
+
+        //callback if its set
+        if (CallBackMethod != null && (animationFrameSet.startingFrame + frameIndexForCallBack) < index)
+        {
+            CallBackMethod();
+            CallBackMethod = null;
+        }
 
         UpdateViewRect(index);
         currentFrame = index;

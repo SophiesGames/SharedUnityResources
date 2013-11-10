@@ -12,11 +12,10 @@ public abstract class Being : MonoBehaviour
     public int movementSpeed = 100;
     public int rotationSpeed = 10;
     public int health = 10;
-    public float attackSpeed = 2;
-    public int attackDamage;
+    public float secsCDperRound = 2;
+    public int strength = 1;
     public int meleeRange = 7000;
-	public int freeAttack;
-	
+
     private float roundStartTime = 0;
 
     private bool isAlive = true;
@@ -26,13 +25,13 @@ public abstract class Being : MonoBehaviour
     public Weapon equipedWeapon;
     private Armour equipedArmour;
 
-    private int strength = 1;
 
+    private int attackDamage;
     [HideInInspector]
     public Vector3 facingDirection;
 
-	public Transform AttackTargetTransform {get; set;}
-	
+    public Transform AttackTargetTransform { get; set; }
+
     private List<Vector3> WayPointsList = new List<Vector3>();
     protected ViewBeing viewParent;
 
@@ -40,10 +39,10 @@ public abstract class Being : MonoBehaviour
     {
         North, NorthWest, West, SouthWest, South, SouthEast, East, NorthEast
     }
-	
-	public Direction FacingDirection { get; set;}//TODO: set can only be done privately
-    
-	// Direction FacingDirection { get; set;}
+
+    public Direction FacingDirection { get; set; }//TODO: set can only be done privately
+
+    // Direction FacingDirection { get; set;}
     private void Start()
     {
         characterController = GetComponent<CharacterController>();
@@ -186,7 +185,7 @@ public abstract class Being : MonoBehaviour
                 transform.position = new Vector3(transform.position.x, wayPoint.y, transform.position.z);
             }
         }
-        GA.API.Design.NewEvent("Moved", 1.2f, transform.position); 
+        GA.API.Design.NewEvent("Moved", 1.2f, transform.position);
         characterController.Move(velocity * Time.deltaTime);
 
         viewParent.MoveAnimation();
@@ -197,9 +196,9 @@ public abstract class Being : MonoBehaviour
     /// </summary>
     protected virtual void AttackModeUpdate()
     {
-		//Always face target in fight
-		facingDirection = SetFacingDirection(AttackTargetTransform.position);
-		
+        //Always face target in fight
+        facingDirection = SetFacingDirection(AttackTargetTransform.position);
+
         //Looks at current time so later on if its in range it can check the new current time. Big difference = time to attack!
         if (roundStartTime == 0) roundStartTime = Time.time;
 
@@ -212,9 +211,9 @@ public abstract class Being : MonoBehaviour
             WayPointsList.Clear();
 
             //If time bteween current time and time when round started is big then attack
-            if ((Time.time - roundStartTime) >= attackSpeed || freeAttack > 0)
-            { 
-				
+            if ((Time.time - roundStartTime) >= secsCDperRound)
+            {
+
                 //reset timer
                 roundStartTime = 0;
                 AttackPreparation(this.transform, AttackTargetTransform);
@@ -247,7 +246,10 @@ public abstract class Being : MonoBehaviour
         //Has to do something like give the PC's a default ai script, which is overriden by mouse orders.
         //These orders expire at the end and ai takes over for meantime.
         Controller controller = (Controller)defenderTransform.GetComponent<Controller>();
-        controller.AlertVictimController(attackerTransform);
+        if (controller != null) controller.AlertVictimController(attackerTransform);
+
+        //TODO: Pass in the AttackImpact fucntion that we want called back at the end of the frame.
+        //viewParent.AttackAnimation(AttackImpact()); 
         viewParent.AttackAnimation();
     }
 
@@ -257,7 +259,7 @@ public abstract class Being : MonoBehaviour
 
         defender.health = defender.health - attacker.attackDamage;
 
-        if (defender.health < 0)
+        if (defender.health <= 0)
         {
             defender.isAlive = false;
             defender.viewParent.DieAnimation();
@@ -282,78 +284,78 @@ public abstract class Being : MonoBehaviour
     {
         viewParent.DieAnimation();
     }
-	
-	public Vector3 SetFacingDirection(Vector3 facingPoint)
-	{
-		//Vector3 facingDirection = (point - transform.position);
-//        //Make direction vector 1, 0 or -1 
-//        if (facingDirection.x < 0) facingDirection.x = -1;
-//        else if (facingDirection.x > 0) facingDirection.x = 1;
-//        else facingDirection.x = 0;
-//        if (facingDirection.y < 0) facingDirection.y = -1;
-//        else if (facingDirection.y > 0) facingDirection.y = 1;
-//        else facingDirection.y = 0;
-//        //2d games so z is ignored
-//        facingDirection.z = 0;
-		//FacingDirection = Direction.South;
-		Vector3 facingDirectionVector = (facingPoint - transform.position);
 
-            if (facingDirectionVector.x > 0)
-		{
-			facingDirectionVector.x = 1;
-			
-                if (facingDirectionVector.y > 0)
-                {
-				facingDirectionVector.y = 1;
-                    FacingDirection = Direction.NorthEast;
-                }
-                else if (facingDirectionVector.y < 0)
-                {
-				facingDirectionVector.y = -1;
-                    FacingDirection = Direction.SouthEast;
-                }
-                else
-                {
-				
-				facingDirectionVector.y = 0;
-                    FacingDirection = Direction.East;
-                }
-            }
-            else if (facingDirectionVector.x < 0)
+    public Vector3 SetFacingDirection(Vector3 facingPoint)
+    {
+        //Vector3 facingDirection = (point - transform.position);
+        //        //Make direction vector 1, 0 or -1 
+        //        if (facingDirection.x < 0) facingDirection.x = -1;
+        //        else if (facingDirection.x > 0) facingDirection.x = 1;
+        //        else facingDirection.x = 0;
+        //        if (facingDirection.y < 0) facingDirection.y = -1;
+        //        else if (facingDirection.y > 0) facingDirection.y = 1;
+        //        else facingDirection.y = 0;
+        //        //2d games so z is ignored
+        //        facingDirection.z = 0;
+        //FacingDirection = Direction.South;
+        Vector3 facingDirectionVector = (facingPoint - transform.position);
+
+        if (facingDirectionVector.x > 0)
+        {
+            facingDirectionVector.x = 1;
+
+            if (facingDirectionVector.y > 0)
             {
-			facingDirectionVector.x = -1;
-                if (facingDirectionVector.y > 0)
-                {
-				facingDirectionVector.y = 1;
-                    FacingDirection = Direction.NorthWest;
-                }
-                else if (facingDirectionVector.y < 0)
-                {
-				facingDirectionVector.y = -1;
-                    FacingDirection = Direction.SouthWest;
-                }
-                else
-                {
-				facingDirectionVector.y = 0;
-                    FacingDirection = Direction.West;
-                }
+                facingDirectionVector.y = 1;
+                FacingDirection = Direction.NorthEast;
+            }
+            else if (facingDirectionVector.y < 0)
+            {
+                facingDirectionVector.y = -1;
+                FacingDirection = Direction.SouthEast;
             }
             else
             {
-				facingDirectionVector.x = 0;
-                if (facingDirectionVector.y > 0)
-                {
-				facingDirectionVector.y = 1;
-                    FacingDirection = Direction.North;
-                }
-                else if (facingDirectionVector.y < 0)
-                {
-				facingDirectionVector.y = -1;
-                    FacingDirection = Direction.South;
-                }
+
+                facingDirectionVector.y = 0;
+                FacingDirection = Direction.East;
             }
-		
-		
-		return facingDirectionVector;
-	}
+        }
+        else if (facingDirectionVector.x < 0)
+        {
+            facingDirectionVector.x = -1;
+            if (facingDirectionVector.y > 0)
+            {
+                facingDirectionVector.y = 1;
+                FacingDirection = Direction.NorthWest;
+            }
+            else if (facingDirectionVector.y < 0)
+            {
+                facingDirectionVector.y = -1;
+                FacingDirection = Direction.SouthWest;
+            }
+            else
+            {
+                facingDirectionVector.y = 0;
+                FacingDirection = Direction.West;
+            }
+        }
+        else
+        {
+            facingDirectionVector.x = 0;
+            if (facingDirectionVector.y > 0)
+            {
+                facingDirectionVector.y = 1;
+                FacingDirection = Direction.North;
+            }
+            else if (facingDirectionVector.y < 0)
+            {
+                facingDirectionVector.y = -1;
+                FacingDirection = Direction.South;
+            }
+        }
+
+
+        return facingDirectionVector;
+    }
 }

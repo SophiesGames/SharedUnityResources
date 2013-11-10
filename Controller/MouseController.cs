@@ -77,14 +77,11 @@ public class MouseController : UserInputController
                 //checks for hit
                 if (Physics.Raycast(ray, out hit, 100))
                 {
-                    //the hit is an ai character
-                    if (hit.transform.GetComponent(typeof(AI_BasicController)))
-                    {
+                    //the hit is an ai character - doesnt actualy amtter. suicide possible
+                    //if (hit.transform.GetComponent(typeof(AI_BasicController)))
+                    //{}
                         selectedCharacter.AttackTargetTransform = hit.transform;
-						
-						//if you 
-						selectedCharacter.freeAttack++;
-                    }
+                    
                 }
                 //Nothing was hit so its the floor
                 else
