@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public static class Pathfinding
+public static class PathfindingLegacy
 {
 
     public static List<Vector3> GetNextWaypoint(Vector3 currentPosition, Vector3 finalDestinationPos)

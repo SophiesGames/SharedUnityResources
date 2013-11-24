@@ -120,7 +120,7 @@ public abstract class Being : MonoBehaviour
         //clears any other movement orders
         WayPointsList.Clear();
         //In future it can take in a list of waypoints
-        WayPointsList = Pathfinding.GetNextWaypoint(transform.position, targetPosition);
+        WayPointsList = PathfindingLegacy.GetNextWaypoint(transform.position, targetPosition);
     }
 
     /// <summary>
