@@ -32,7 +32,7 @@ public class MouseController : UserInputController
             if (Physics.Raycast(ray, out hit, 100))
             {
                 //the hit is a character that doesnt ahve a controller
-                if (hit.transform.GetComponent(typeof(Being)) && !hit.transform.GetComponent(typeof(AI_NPC_Controller)))
+                if (hit.transform.GetComponent(typeof(Being)) && !hit.transform.GetComponent(typeof(AI_BasicController)))
                 {
                     selectedCharacter = (Being)hit.transform.GetComponent(typeof(Being));
                 }
@@ -46,7 +46,7 @@ public class MouseController : UserInputController
                 //The hit is a ui component
                 //if (hit.transform.GetComponent(typeof(UIcomponent)))
                 //{
-                //      //get the type and make an instance
+                //      //get the type and make an insta nce
                 //    UIcomponent uIcomponent = hit.transform.GetComponent(typeof(UIcomponent);
                 //      //get the name of the button hit.
                 //    string command = uIcomponent.GetButtonComamnd;
@@ -103,7 +103,7 @@ public class MouseController : UserInputController
 
         if (Input.GetButton("9"))
         {
-            selectedCharacter.equipedWeapon = new Dagger();
+            //selectedCharacter.equipedWeapon = new Dagger();
         }
     }
 }

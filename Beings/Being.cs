@@ -43,11 +43,11 @@ public abstract class Being : MonoBehaviour
     public Direction FacingDirection { get; set; }//TODO: set can only be done privately
 
     // Direction FacingDirection { get; set;}
-    private void Start()
+    protected virtual void Start()
     {
+        
         characterController = GetComponent<CharacterController>();
         FindAndInitialiseView();
-        equipedWeapon = new Fist();
     }
 
     /// <summary>
