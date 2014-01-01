@@ -7,12 +7,15 @@ using System.Collections;
 /// </summary>
 public class MouseController : UserInputController
 {
+
+	public GameObject wayPointManager;
     protected Vector3 mouseWorldPosition;
 
     protected void Start()
     {
-        GameObject ObjectPool = GameObject.Find("ObjectPool");
-        destinationLocator = ObjectPool.transform.Find("DestinationWayPoint");
+        //GameObject ObjectPool = GameObject.Find("ObjectPool");
+
+		destinationLocator = wayPointManager.transform.Find("WayPoint1");
     }
 
 	//need a mouse over that changes the icon based on the type of enemy it is over
@@ -23,13 +26,19 @@ public class MouseController : UserInputController
         //Left Click = selections
         if (Input.GetButton("LeftClick"))
         {
-            //create the ray
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            //give somethign to store the hit
-            RaycastHit hit;
+			//create the ray
+			//Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+			//if (Physics.Raycast(ray, out hit, 100))
+           
+			Vector2 mousePos = new Vector2(Camera.main.ScreenToWorldPoint(Input.mousePosition).x, 
+			                               Camera.main.ScreenToWorldPoint(Input.mousePosition).y);
+			//LayerMask layerMask = LayerMask.NameToLayer("Player");
 
-            //checks for a hit
-            if (Physics.Raycast(ray, out hit, 100))
+			//give somethign to store the hit
+			RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero);//layerMask
+
+            //checks for a hit on collider as hit as value type so cant be checked for null
+			if (hit.collider != null)
             {
                 //the hit is a character that doesnt ahve a controller
                 if (hit.transform.GetComponent(typeof(Being)) && !hit.transform.GetComponent(typeof(AI_BasicController)))
@@ -69,13 +78,15 @@ public class MouseController : UserInputController
             {
                 selectedCharacter.ClearAllCommands();
 
-                //create the ray
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                //give somethign to store the hit
-                RaycastHit hit;
+				Vector2 mousePos = new Vector2(Camera.main.ScreenToWorldPoint(Input.mousePosition).x, 
+				                               Camera.main.ScreenToWorldPoint(Input.mousePosition).y);
+				LayerMask layerMask = LayerMask.NameToLayer("Player");
+				//give somethign to store the hit
+				
+				RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero, 0f, layerMask);
 
                 //checks for hit
-                if (Physics.Raycast(ray, out hit, 100))
+                if (hit.collider != null)
                 {
                     //the hit is an ai character - doesnt actualy amtter. suicide possible
                     //if (hit.transform.GetComponent(typeof(AI_BasicController)))
@@ -88,22 +99,12 @@ public class MouseController : UserInputController
                 {
                     mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                     mouseWorldPosition.z = 0;
-                    selectedCharacter.CalculatePath(mouseWorldPosition);
-
+					//sets destination marker
                     destinationLocator.transform.position = mouseWorldPosition;
+					//tells slected characters where to move
+					selectedCharacter.CalculatePath(mouseWorldPosition);
                 }
             }
-        }
-
-        if (Input.GetButton("Space"))
-        {
-            if (selectedCharacter) selectedCharacter.Die();
-
-        }
-
-        if (Input.GetButton("9"))
-        {
-            //selectedCharacter.equipedWeapon = new Dagger();
         }
     }
 }
